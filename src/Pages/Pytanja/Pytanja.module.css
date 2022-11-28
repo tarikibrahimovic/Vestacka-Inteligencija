@@ -1,0 +1,88 @@
+svg {
+  border: 3px solid black;
+  width: auto;
+  height: 750px;
+}
+
+.svgOkvir{
+    background-color: gainsboro;
+    /* width: 60vw; */
+}
+
+.tile {
+  outline: 1px solid black;
+}
+
+.empty{
+    fill: gray;
+}
+
+.player {
+  fill: lightgoldenrodyellow;
+  transition: transform 500ms;
+  width: 30px;
+  height: 30px;
+}
+
+.cilj {
+  width: 30px;
+  height: 30px;
+}
+
+.selected {
+  outline: 1px solid red;
+}
+
+.opt-container {
+  display: flex;
+  flex-direction: row;
+  border: 2px solid black;
+  padding: 5px;
+}
+
+.option {
+  width: 80px;
+  height: 80px;
+  margin: 0 5px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.trail {
+  width: 20px;
+  height: 20px;
+}
+
+.edit {
+  height: 40px;
+  width: 150px;
+}
+
+.forma {
+  border: 3px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edits {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
