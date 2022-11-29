@@ -1,24 +1,20 @@
 svg {
   border: 3px solid black;
-  width: auto;
+  max-width: 800px;
   height: 750px;
 }
 
 .svgOkvir{
     background-color: gainsboro;
-    /* width: 60vw; */
 }
 
 .tile {
   outline: 1px solid black;
+  left: 4px;
 }
 
-.empty{
-    fill: gray;
-}
 
 .player {
-  fill: lightgoldenrodyellow;
   transition: transform 500ms;
   width: 30px;
   height: 30px;
@@ -27,15 +23,21 @@ svg {
 .cilj {
   width: 30px;
   height: 30px;
+  transition: transform 500ms;
 }
 
 .selected {
   outline: 1px solid red;
 }
 
+.poljeSelected{
+  outline: 3px solid red;
+}
+
 .opt-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: space-between;
   border: 2px solid black;
   padding: 5px;
 }
@@ -44,6 +46,12 @@ svg {
   width: 80px;
   height: 80px;
   margin: 0 5px;
+}
+
+.optOmotac{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
@@ -85,4 +93,14 @@ svg {
   display: flex;
   flex-direction: row;
   gap: 40px;
+}
+
+
+.editor{
+  display: flex;
+}
+
+.agents{
+  display: flex;
+  justify-content: space-around;
 }
