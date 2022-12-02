@@ -13,7 +13,6 @@ import Bole from "../../img/Bole.png";
 import Draza from "../../img/Draza.png";
 import Jocke from "../../img/Jocke.png";
 import { NotificationManager } from "react-notifications";
-import DraggableSVG from "react-draggable-svg";
 import Player from "../../components/Player/Player";
 import Finish from "../../components/Cilj/Cilj";
 
@@ -52,6 +51,7 @@ function Pytanja() {
   const [playerX, setPlayerX] = useState(0);
   const [playerY, setPlayerY] = useState(0);
   const [agent, setAgent] = useState(Draza);
+  const [agentKey, setAgentKey] = useState("Draza");
 
   const [ciljX, setCiljX] = useState(1);
   const [ciljY, setCiljY] = useState(0);
@@ -74,6 +74,51 @@ function Pytanja() {
   const [column, setColumn] = useState();
   let size = 30;
   let pom;
+
+  // async function Pytanja() {
+  //   try {
+      // let requestOptions = {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   mode: 'cors',
+      //   body: JSON.stringify({
+      //     finishPosition: { x: ciljX, y: ciljY },
+      //     map: tiles2,
+      //     player: { tip: agentKey, x: playerX, y: playerY },
+      //   }),
+      // };
+
+  //     let res = await fetch("http://127.0.0.1:8000", requestOptions);
+  //     let data = await res;
+  //     console.log(await data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  function Pytanja(){
+    let requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: 'cors',
+      body: JSON.stringify({
+        finishPosition: { x: ciljX, y: ciljY },
+        map: tiles2,
+        player: { tip: agentKey, x: playerX, y: playerY },
+      }),
+    };
+
+    fetch("http://127.0.0.1:8000", requestOptions).then((e) => {
+      console.log(e)  
+    return e.json()
+    }).then((res) => {
+      console.log(res);
+    }).catch((e) => console.log(e))
+  }
 
   useEffect(() => {
     if (editorMode) return;
@@ -136,6 +181,7 @@ function Pytanja() {
   useEffect(() => {
     changeTile();
   }, [selectedTile]);
+
   return (
     <div className={classes.container}>
       <div className={classes.editor}>
@@ -248,7 +294,11 @@ function Pytanja() {
             {Object.keys(agentMap).map((ag) => (
               <div className={classes.optOmotac}>
                 <img
-                  onClick={() => changeAgent(ag)}
+                  onClick={() => {
+                    changeAgent(ag);
+                    setDragingCilj(false);
+                    setAgentKey(ag);
+                  }}
                   className={`${classes.option} ${
                     agent === agentMap[ag] && classes.poljeSelected
                   }`}
@@ -275,8 +325,10 @@ function Pytanja() {
               }
             }
           }
-          if (t === 0) setEditorMode((e) => !e);
-          else {
+          if (t === 0) {
+            setEditorMode((e) => !e);
+            Pytanja();
+          } else {
             NotificationManager.error("", "Fill all fields");
           }
         }}
@@ -319,7 +371,7 @@ function Pytanja() {
                       changeTile();
                     }}
                     onDragEnter={(e) => {
-                      if(editorMode){
+                      if (editorMode) {
                         if (!dragingCilj) {
                           setPlayerX(j);
                           setPlayerY(i);
