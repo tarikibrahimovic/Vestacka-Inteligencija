@@ -75,29 +75,6 @@ function Pytanja() {
   let size = 30;
   let pom;
 
-  // async function Pytanja() {
-  //   try {
-      // let requestOptions = {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   mode: 'cors',
-      //   body: JSON.stringify({
-      //     finishPosition: { x: ciljX, y: ciljY },
-      //     map: tiles2,
-      //     player: { tip: agentKey, x: playerX, y: playerY },
-      //   }),
-      // };
-
-  //     let res = await fetch("http://127.0.0.1:8000", requestOptions);
-  //     let data = await res;
-  //     console.log(await data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   function Pytanja(){
     let requestOptions = {
       method: "POST",
@@ -391,8 +368,20 @@ function Pytanja() {
                     }
                     x={j * size}
                     y={i * size}
-                    width={(width * size) / width}
-                    height={(height * size) / height}
+                    width={`${
+                      !editorMode
+                        ? (width * size) / width
+                        : (width * size) / width - 1.7
+                    }`}
+                    height={`${
+                      !editorMode
+                        ? (height * size) / height
+                        : (height * size) / height - 1.7
+                    }`}
+                    onClick={() => {
+                      selectTile(i, j);
+                      changeTile();
+                    }}
                   />
                 );
             });

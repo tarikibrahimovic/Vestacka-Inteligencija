@@ -13,6 +13,11 @@ svg {
   left: 4px;
 }
 
+.empty{
+  outline: 1px solid black;
+  left: 4px;
+  fill: tan;
+}
 
 .player {
   transition: transform 500ms;
