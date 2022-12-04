@@ -19,6 +19,10 @@ svg {
   fill: tan;
 }
 
+.hidden{
+  display: none;
+}
+
 .player {
   transition: transform 500ms;
   width: 30px;

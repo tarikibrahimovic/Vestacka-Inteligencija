@@ -60,28 +60,20 @@ function Pytanja() {
   const [selectedTile, setSelectedTile] = useState({ i: null, j: null });
   const [polje, setPolje] = useState(null);
 
-  const [path, setPath] = useState([
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: 1 },
-    { x: 1, y: 2 },
-    { x: 2, y: 2 },
-    { x: 3, y: 2 },
-    { x: 3, y: 3 },
-  ]);
 
+  const [path, setPath] = useState([])
   const [rows, setRows] = useState();
   const [column, setColumn] = useState();
   let size = 30;
   let pom;
 
-  function Pytanja(){
+  function Pytanja() {
     let requestOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      mode: 'cors',
+      mode: "cors",
       body: JSON.stringify({
         finishPosition: { x: ciljX, y: ciljY },
         map: tiles2,
@@ -89,33 +81,37 @@ function Pytanja() {
       }),
     };
 
-    fetch("http://127.0.0.1:8000", requestOptions).then((e) => {
-      console.log(e)  
-    return e.json()
-    }).then((res) => {
-      console.log(res);
-    }).catch((e) => console.log(e))
+    fetch("http://127.0.0.1:8000", requestOptions)
+      .then((e) => {
+        return e.json();
+      })
+      .then((res) => {
+        setPath(res.res);
+      })
+      .catch((e) => console.log(e));
   }
 
-  useEffect(() => {
-    if (editorMode) return;
-    let idx = 0;
-    const interval = setInterval(() => {
-      const { x, y } = path[idx];
-      setPlayerX(x);
-      setPlayerY(y);
-      idx++;
-      setTimeout(() => {
-        setPath((p) => p.slice(1));
-      }, 500);
 
-      if (idx === path.length) {
-        clearInterval(interval);
+  useEffect(() => {
+    let idx = 0
+    const interval = setInterval(() => {
+      if(path[idx])
+      {
+        const {x, y} = path[idx]
+        console.log( path[idx], x, y)
+        idx++
+        setPlayerX(x)
+        setPlayerY(y)
+        setTimeout(() => {
+          setPath((p) => p.slice(1));
+        }, 100);
       }
-    }, 500);
+    }, 400)
 
     return () => clearInterval(interval);
-  }, [editorMode]);
+
+    
+  }, [path]);
 
   function selectTile(i, j) {
     if (!editorMode) return;
@@ -155,9 +151,12 @@ function Pytanja() {
     }
   }
 
+  let ed = true
   useEffect(() => {
     changeTile();
   }, [selectedTile]);
+
+
 
   return (
     <div className={classes.container}>
@@ -303,8 +302,8 @@ function Pytanja() {
             }
           }
           if (t === 0) {
-            setEditorMode((e) => !e);
             Pytanja();
+            setEditorMode((e) => !e);
           } else {
             NotificationManager.error("", "Fill all fields");
           }
@@ -414,6 +413,8 @@ function Pytanja() {
             ciljX={ciljX}
             ciljY={ciljY}
             klasa={classes.cilj}
+            hidden={classes.hidden}
+            editorMode={editorMode}
             setDragingCilj={setDragingCilj}
           />
         </svg>
