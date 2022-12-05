@@ -93,6 +93,7 @@ function Pytanja() {
 
 
   useEffect(() => {
+    if (editorMode) return;
     let idx = 0
     const interval = setInterval(() => {
       if(path[idx])
@@ -391,8 +392,8 @@ function Pytanja() {
               <image
                 href={Trail}
                 className={classes.trail}
-                x={(p.x * width * size) / width + 90 / width / 2}
-                y={(p.y * height * size) / height + 90 / height / 2}
+                x={(p.x * width * size) / width + 60 / width / 2}
+                y={(p.y * height * size) / height + 60 / height / 2}
               />
             ))}
           <Player
