@@ -99,7 +99,6 @@ function Pytanja() {
       if(path[idx])
       {
         const {x, y} = path[idx]
-        console.log( path[idx], x, y)
         idx++
         setPlayerX(x)
         setPlayerY(y)
@@ -152,7 +151,6 @@ function Pytanja() {
     }
   }
 
-  let ed = true
   useEffect(() => {
     changeTile();
   }, [selectedTile]);
@@ -242,6 +240,11 @@ function Pytanja() {
               setHeight(pom.length);
               setWidth(pom[0].length);
               setTiles2(pom);
+              setCiljX(1)
+              setCiljY(0)
+              setPlayerX(0)
+              setPlayerY(0)
+              setEditorMode(true)
               pom = null;
             }}
           >
@@ -347,6 +350,9 @@ function Pytanja() {
                       selectTile(i, j);
                       changeTile();
                     }}
+                    onDragCapture={(e) =>{
+                      console.log(e)
+                    }}
                     onDragEnter={(e) => {
                       if (editorMode) {
                         if (!dragingCilj) {
@@ -357,6 +363,7 @@ function Pytanja() {
                           setCiljY(i);
                         }
                       }
+                      console.log("DRAAAG");
                     }}
                   />
                 );
