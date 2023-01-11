@@ -1,0 +1,50 @@
+.agent{
+    width: 40px;
+    height: 40px;
+}
+
+.agentButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.inputi{
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin: 10px;
+}
+
+.titles{
+    text-align: center;
+}
+
+.selected{
+    background-color: rgb(165, 165, 165);
+}
+
+.disturb{
+    width: 40px;
+    height: 40px;
+    border: none;
+}
+
+.hiddenSidebarContent{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+.nums{
+    border-radius: 8px;
+    border: 2px solid black;
+    padding: 5px;
+}

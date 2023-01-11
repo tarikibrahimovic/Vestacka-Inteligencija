@@ -77,10 +77,28 @@ svg {
   height: 20px;
 }
 
-.edit {
+.edit, .start {
   height: 40px;
   width: 150px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
 }
+
+.edit:hover, .start:hover {
+  transform: translate(0, -2px);
+  transition: 0.2s ease-in-out;
+  box-shadow: 0 2px #888;
+}
+
+.edit{
+  background-color: blue;
+}
+
+.start{
+  background-color: rgb(0, 128, 66);
+}
+
 
 .forma {
   border: 3px solid black;
@@ -96,6 +114,19 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.numInput{
+  border-radius: 4px;
+}
+
+.titles{
+  border-bottom: 2px solid black;
+}
+
+.guide{
+  display: flex;
+  flex-direction: column;
 }
 
 .edits {

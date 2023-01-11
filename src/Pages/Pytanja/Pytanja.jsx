@@ -60,8 +60,7 @@ function Pytanja() {
   const [selectedTile, setSelectedTile] = useState({ i: null, j: null });
   const [polje, setPolje] = useState(null);
 
-
-  const [path, setPath] = useState([])
+  const [path, setPath] = useState([]);
   const [rows, setRows] = useState();
   const [column, setColumn] = useState();
   let size = 30;
@@ -91,26 +90,22 @@ function Pytanja() {
       .catch((e) => console.log(e));
   }
 
-
   useEffect(() => {
     if (editorMode) return;
-    let idx = 0
+    let idx = 0;
     const interval = setInterval(() => {
-      if(path[idx])
-      {
-        const {x, y} = path[idx]
-        idx++
-        setPlayerX(x)
-        setPlayerY(y)
+      if (path[idx]) {
+        const { x, y } = path[idx];
+        idx++;
+        setPlayerX(x);
+        setPlayerY(y);
         setTimeout(() => {
           setPath((p) => p.slice(1));
         }, 100);
       }
-    }, 400)
+    }, 400);
 
     return () => clearInterval(interval);
-
-    
   }, [path]);
 
   function selectTile(i, j) {
@@ -155,13 +150,11 @@ function Pytanja() {
     changeTile();
   }, [selectedTile]);
 
-
-
   return (
     <div className={classes.container}>
       <div className={classes.editor}>
         <div className={classes.forma}>
-          <h2>Edit map</h2>
+          <h2 className={classes.titles}>Edit map:</h2>
           <div className={classes.edits}>
             <div className={classes.inputi}>
               <label htmlFor="row">Enter number of rows:</label>
@@ -169,14 +162,16 @@ function Pytanja() {
                 type="number"
                 placeholder="Enter rows"
                 id="row"
-                min="1"
+                min="3"
                 max="10"
+                className={classes.numInput}
                 onChange={(e) => {
                   console.log(e.target.value);
                   if (e.target.value > 10) setRows(10);
                   else if (e.target.value === null) {
                     setRows(tiles2.length);
-                  } else setRows(e.target.value);
+                  } else if (e.target.value < 3) setRows(3);
+                  else setRows(e.target.value);
                 }}
               />
             </div>
@@ -184,25 +179,28 @@ function Pytanja() {
               <label htmlFor="col">Enter number of columns:</label>
               <input
                 type="number"
+                className={classes.numInput}
                 placeholder="Enter colums"
                 id="col"
-                min="1"
+                min="3"
                 max="10"
                 onChange={(e) => {
                   if (e.target.value > 10) setColumn(10);
                   else if (e.target.value === null) {
                     setColumn(tiles2[0].length);
-                  } else setColumn(e.target.value);
+                  } else if (e.target.value < 3) setColumn(3);
+                  else setColumn(e.target.value);
                 }}
               />
             </div>
           </div>
-          <p>
-            {" "}
+          <p className={classes.guide}>
             <b>
-              {" "}
-              <i>Map max: 10x10</i>{" "}
-            </b>{" "}
+              <i>Map max: 10x10</i>
+            </b>
+            <b>
+              <i>Map min: 3x3</i>
+            </b>
           </p>
           <button
             className={classes.edit}
@@ -240,11 +238,11 @@ function Pytanja() {
               setHeight(pom.length);
               setWidth(pom[0].length);
               setTiles2(pom);
-              setCiljX(1)
-              setCiljY(0)
-              setPlayerX(0)
-              setPlayerY(0)
-              setEditorMode(true)
+              setCiljX(1);
+              setCiljY(0);
+              setPlayerX(0);
+              setPlayerY(0);
+              setEditorMode(true);
               pom = null;
             }}
           >
@@ -252,6 +250,7 @@ function Pytanja() {
           </button>
         </div>
         <div className={classes["opt-container"]}>
+          <h3 className={classes.titles}>TILES:</h3>
           <div className={classes.agents}>
             {Object.keys(tileMap).map((color) => (
               <div className={classes.optOmotac}>
@@ -270,6 +269,7 @@ function Pytanja() {
               </div>
             ))}
           </div>
+          <h3 className={classes.titles}>AGENTS:</h3>
           <div className={classes.agents}>
             {Object.keys(agentMap).map((ag) => (
               <div className={classes.optOmotac}>
@@ -293,7 +293,7 @@ function Pytanja() {
         </div>
       </div>
       <button
-        className={classes.edit}
+        className={classes.start}
         onClick={(e) => {
           e.preventDefault();
           let t = 0;
@@ -350,9 +350,6 @@ function Pytanja() {
                       selectTile(i, j);
                       changeTile();
                     }}
-                    onDragCapture={(e) =>{
-                      console.log(e)
-                    }}
                     onDragEnter={(e) => {
                       if (editorMode) {
                         if (!dragingCilj) {
@@ -363,7 +360,6 @@ function Pytanja() {
                           setCiljY(i);
                         }
                       }
-                      console.log("DRAAAG");
                     }}
                   />
                 );
