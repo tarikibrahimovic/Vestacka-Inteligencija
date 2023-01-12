@@ -1,0 +1,23 @@
+.map{
+    width: auto;
+    background-color: white;
+    border: 10px solid black;
+    border-radius: 20px;
+}
+
+.main{
+    display: flex;
+    flex-direction: column; 
+}
+
+.row{
+    height: 100px;
+}
+
+.scaffold:hover{
+    opacity: 0.5;
+    cursor: pointer;
+    transition: 0.1s ease-in-out;
+}
+
+

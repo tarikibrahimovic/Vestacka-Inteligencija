@@ -68,7 +68,6 @@
     border: none;
     text-align: end;
     right: 0;
-    color: red;
 }
 
 .closeP{
@@ -104,4 +103,17 @@
 .save{
     background-color: green;
     border: 2px solid green;
+}
+
+.imgContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.imgContainer img{
+    width: 40px;
+    height: auto;
 }

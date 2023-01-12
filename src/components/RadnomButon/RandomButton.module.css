@@ -1,0 +1,12 @@
+.random{
+    border: 2px solid darkblue;
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+.random:hover{
+    background-color: darkblue;
+    color: white;
+    cursor: pointer;
+    transition: 0.1s ease-in-out;
+}

@@ -3,6 +3,9 @@ import DefaultAgent from "../../img/DefaultAgent.png";
 import { MdDoNotDisturbAlt } from "react-icons/md";
 import PlayerSettings from "../PlayerSettings/PlayerSettings";
 import { AiOutlineClose } from "react-icons/ai";
+import DefaultAgent1 from "../../img/DefaultAgent1.png";
+import Student from "../../img/Teacher.png";
+import { useEffect } from "react";
 
 export default function Settings({
   hiddenSidebar,
@@ -16,7 +19,9 @@ export default function Settings({
   studentPlayer,
   setStudentPlayer,
   setMapRows,
+  mapRows,
   setMapCols,
+  mapCols,
   setStudentPlayerDepth,
   setStudentPlayerTime,
   userPlayer,
@@ -27,7 +32,23 @@ export default function Settings({
   setTeacherTime1,
   setTeacherTime2,
   setTeacherTime3,
+  map,
+  setMap
 }) {
+
+  useEffect(() => {
+    if (mapRows && mapCols) {
+      const newMap = [];
+      for (let i = 0; i < mapRows; i++) {
+        newMap.push([]);
+        for (let j = 0; j < mapCols; j++) {
+          newMap[i].push(0);
+        }
+      }
+      setMap(newMap);
+    }
+  }, [mapRows, mapCols]);
+
   return (
     <div className={hiddenSidebar ? classes.hiddenSidebar : classes.sidebar}>
       <p
@@ -47,6 +68,7 @@ export default function Settings({
             name="row"
             min="3"
             max="10"
+            selected={map.length}
             placeholder="Enter rows"
             onChange={(e) => setMapRows(e.target.value)}
           />
@@ -60,6 +82,7 @@ export default function Settings({
             name="col"
             min="3"
             max="10"
+            selected={map[0].length}
             placeholder="Enter columns"
             onChange={(e) => setMapCols(e.target.value)}
           />
@@ -101,14 +124,17 @@ export default function Settings({
             className={classes.agent}
           />
           <img
-            src={DefaultAgent}
-            alt="DefaultAgent"
+            src={DefaultAgent1}
+            alt="DefaultAgent1"
             className={classes.agent}
           />
         </button>
       </div>
       <hr className={classes.hr} />
-      <h4 className={classes.titles}>Student players:</h4>
+      <h4 className={classes.titles}>Student players: </h4>
+      <div className={classes.imgContainer}>
+        <img src={Student} alt="Teacher" />
+      </div>
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
