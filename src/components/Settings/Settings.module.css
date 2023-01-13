@@ -8,6 +8,7 @@
     overflow-y: auto;
     height: 100vh;
     border: 3px solid black;
+    z-index: 100;
 }
 
 .hiddenSidebar{

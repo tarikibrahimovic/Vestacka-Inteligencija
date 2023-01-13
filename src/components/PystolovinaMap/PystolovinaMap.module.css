@@ -20,4 +20,16 @@
     transition: 0.1s ease-in-out;
 }
 
+.agent{
+    height: 100px;
+    width: auto;
+    position: absolute;
+    transform: translate(-100%);
+    z-index: 10;
+}
 
+.contentHolder{
+    width: 100%;
+    height: 100%;
+    display: inline;
+}

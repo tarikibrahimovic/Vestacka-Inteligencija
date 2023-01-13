@@ -4,37 +4,81 @@ import { MdDoNotDisturbAlt } from "react-icons/md";
 import PlayerSettings from "../PlayerSettings/PlayerSettings";
 import { AiOutlineClose } from "react-icons/ai";
 import DefaultAgent1 from "../../img/DefaultAgent1.png";
-import Student from "../../img/Teacher.png";
+import Student from "../../img/STUDENT.png";
 import { useEffect } from "react";
 
 export default function Settings({
   hiddenSidebar,
   setHiddenSidebar,
-  teacherHandler1,
-  teacherHandler2,
-  teacherHandler3,
-  teacherPlayer1,
-  teacherPlayer2,
-  teacherPlayer3,
-  studentPlayer,
-  setStudentPlayer,
   setMapRows,
   mapRows,
   setMapCols,
   mapCols,
-  setStudentPlayerDepth,
-  setStudentPlayerTime,
-  userPlayer,
-  setUserPlayer,
-  setTeacherDepth1,
-  setTeacherDepth2,
-  setTeacherDepth3,
-  setTeacherTime1,
-  setTeacherTime2,
-  setTeacherTime3,
   map,
-  setMap
+  setMap,
+  Agents,
+  setAgents,
 }) {
+  const studentAgentHandler = (tip) => {
+    if (!Agents.some((agent) => agent.name === "Student")) {
+      setAgents([
+        ...Agents,
+        {
+          id: 2,
+          name: "Student",
+          tip: tip,
+          img: Student,
+          row: null,
+          col: null,
+          depth: null,
+          time: null,
+        },
+      ]);
+    } else {
+      setAgents((agent) => {
+        return agent.map((a) => {
+          if (a.name === "Student") {
+            return {
+              ...a,
+              tip: tip,
+            };
+          }
+          return a;
+        });
+      });
+    }
+  };
+
+  const teacherAgentHandler = (teacher, tip, img) => {
+    if (!Agents.some((agent) => agent.name === teacher)) {
+      setAgents([
+        ...Agents,
+        {
+          id: 3,
+          name: teacher,
+          tip: tip,
+          img: img,
+          row: null,
+          col: null,
+          depth: null,
+          time: null,
+        },
+      ]);
+    } else {
+      setAgents((agent) => {
+        return agent.map((a) => {
+          if (a.name === teacher) {
+            return {
+              ...a,
+              tip: tip,
+              img: img,
+            };
+          }
+          return a;
+        });
+      });
+    }
+  };
 
   useEffect(() => {
     if (mapRows && mapCols) {
@@ -94,17 +138,47 @@ export default function Settings({
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
-            userPlayer === null && classes.selected
+            !Agents.some(agent => agent.name === "User") && classes.selected
           }`}
-          onClick={(e) => setUserPlayer(null)}
+          onClick={(e) => {
+            let newAgents = Agents?.filter((agent) => agent.name !== "User");
+            setAgents(newAgents);
+          }}
         >
           <MdDoNotDisturbAlt className={classes.disturb} />
         </button>
         <button
           className={`${classes.agentButton} ${
-            userPlayer === 1 && classes.selected
+            Agents.filter(agent => {return agent.name === "User"}).length === 1 && classes.selected
           }`}
-          onClick={(e) => setUserPlayer(1)}
+          onClick={(e) => {
+            if (!Agents.some((agent) => agent.name === "User")) {
+              setAgents([
+                ...Agents,
+                {
+                  id: 0,
+                  name: "User",
+                  img: DefaultAgent,
+                  row: null,
+                  col: null,
+                  depth: null,
+                  time: null,
+                },
+              ]);
+            } else {
+              setAgents((agent) => {
+                return agent.map((a) => {
+                  if (a.name === "User") {
+                    return {
+                      ...a,
+                      img: DefaultAgent,
+                    };
+                  }
+                  return a;
+                });
+              });
+            }
+          }}
         >
           <img
             src={DefaultAgent}
@@ -114,9 +188,46 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            userPlayer === 2 && classes.selected
+            Agents.filter(agent => {return agent.name === "User"}).length === 2 && classes.selected
           }`}
-          onClick={(e) => setUserPlayer(2)}
+          onClick={(e) => {
+            if (!Agents.some((agent) => agent.name === "User")) {
+              setAgents([
+                ...Agents,
+                {
+                  id: 0,
+                  name: "User",
+                  img: DefaultAgent,
+                  row: null,
+                  col: null,
+                  depth: null,
+                  time: null,
+                },
+                {
+                  id: 1,
+                  name: "User",
+                  img: DefaultAgent1,
+                  row: null,
+                  col: null,
+                  depth: null,
+                  time: null,
+                },
+              ]);
+            } else {
+              setAgents([
+                ...Agents,
+                {
+                  id: 1,
+                  name: "User",
+                  img: DefaultAgent1,
+                  row: null,
+                  col: null,
+                  depth: null,
+                  time: null,
+                },
+              ]);
+            }
+          }}
         >
           <img
             src={DefaultAgent}
@@ -138,41 +249,45 @@ export default function Settings({
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
-            studentPlayer === null && classes.selected
+            !Agents.some(agent => agent.name === "Student") && classes.selected
           }`}
-          onClick={(e) => setStudentPlayer(null)}
+          onClick={(e) => {
+            setAgents(Agents.filter((agent) => agent.name !== "Student"));
+          }}
         >
           <MdDoNotDisturbAlt className={classes.disturb} />
         </button>
         <button
           className={`${classes.agentButton} ${
-            studentPlayer === "Minimax" && classes.selected
+            Agents.some(agent => agent.name === "Student" && agent.tip === "Minimax") && classes.selected
           }`}
-          onClick={(e) => setStudentPlayer("Minimax")}
+          onClick={(e) => {
+            studentAgentHandler("Minimax");
+          }}
         >
           <b>Minimax</b>
         </button>
         <button
           className={`${classes.agentButton} ${
-            studentPlayer === "AlphaBeta" && classes.selected
+            Agents.some(agent => agent.name === "Student" && agent.tip === "AlphaBeta") && classes.selected
           }`}
-          onClick={(e) => setStudentPlayer("AlphaBeta")}
+          onClick={(e) => studentAgentHandler("AlphaBeta")}
         >
           <b>AlphaBeta</b>
         </button>
         <button
           className={`${classes.agentButton} ${
-            studentPlayer === "Expectimax" && classes.selected
+            Agents.some(agent => agent.name === "Student" && agent.tip === "Expectimax") && classes.selected
           }`}
-          onClick={(e) => setStudentPlayer("Expectimax")}
+          onClick={(e) => studentAgentHandler("Expectimax")}
         >
           <b>Expectimax</b>
         </button>
         <button
           className={`${classes.agentButton} ${
-            studentPlayer === "MaxN" && classes.selected
+            Agents.some(agent => agent.name === "Student" && agent.tip === "Max^N") && classes.selected
           }`}
-          onClick={(e) => setStudentPlayer("MaxN")}
+          onClick={(e) => studentAgentHandler("Max^N")}
         >
           <b>Max N</b>
         </button>
@@ -186,7 +301,45 @@ export default function Settings({
             id="depth"
             className={classes.nums}
             name="depth"
-            onChange={(e) => setStudentPlayerDepth(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value < 3) {
+                setAgents((agent) => {
+                  return agent.map((a) => {
+                    if (a.name === "Student") {
+                      return {
+                        ...a,
+                        depth: 3,
+                      };
+                    }
+                    return a;
+                  });
+                });
+              } else if (e.target.value > 10) {
+                setAgents((agent) => {
+                  return agent.map((a) => {
+                    if (a.name === "Student") {
+                      return {
+                        ...a,
+                        depth: 10,
+                      };
+                    }
+                    return a;
+                  });
+                });
+              } else {
+                setAgents((agent) => {
+                  return agent.map((a) => {
+                    if (a.name === "Student") {
+                      return {
+                        ...a,
+                        depth: e.target.value,
+                      };
+                    }
+                    return a;
+                  });
+                });
+              }
+            }}
           />
         </div>
         <div className={classes.inputi}>
@@ -196,7 +349,33 @@ export default function Settings({
             id="time"
             className={classes.nums}
             name="time"
-            onChange={(e) => setStudentPlayerTime(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value < 1) {
+                setAgents((agent) => {
+                  return agent.map((a) => {
+                    if (a.name === "Student") {
+                      return {
+                        ...a,
+                        time: 1,
+                      };
+                    }
+                    return a;
+                  });
+                });
+              } else {
+                setAgents((agent) => {
+                  return agent.map((a) => {
+                    if (a.name === "Student") {
+                      return {
+                        ...a,
+                        time: e.target.value,
+                      };
+                    }
+                    return a;
+                  });
+                });
+              }
+            }}
           />
         </div>
       </div>
@@ -209,22 +388,22 @@ export default function Settings({
         <i>Bole: MaxN</i>
       </div>
       <PlayerSettings
-        teacherHandler={teacherHandler1}
-        teacherPlayer={teacherPlayer1}
-        setTeacherDepth={setTeacherDepth1}
-        setTeacherTime={setTeacherTime1}
+        teacherAgentHandler={teacherAgentHandler}
+        name="Teacher1"
+        setAgents={setAgents}
+        Agents={Agents}
       />
       <PlayerSettings
-        teacherHandler={teacherHandler2}
-        teacherPlayer={teacherPlayer2}
-        setTeacherDepth={setTeacherDepth2}
-        setTeacherTime={setTeacherTime2}
+        teacherAgentHandler={teacherAgentHandler}
+        name="Teacher2"
+        setAgents={setAgents}
+        Agents={Agents}
       />
       <PlayerSettings
-        teacherHandler={teacherHandler3}
-        teacherPlayer={teacherPlayer3}
-        setTeacherDepth={setTeacherDepth3}
-        setTeacherTime={setTeacherTime3}
+        teacherAgentHandler={teacherAgentHandler}
+        name="Teacher3"
+        setAgents={setAgents}
+        Agents={Agents}
       />
       <hr className={classes.hr} />
       <div className={classes.hiddenSidebarContent}>

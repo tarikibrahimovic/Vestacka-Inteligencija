@@ -8,9 +8,7 @@ const tileMap = {
   1: Scaffold,
 };
 
-
-export default function PystolovinaMap({ map, setMap, agentCoordinates }) {
-
+export default function PystolovinaMap({ map, setMap, Agents, setAgents }) {
   return (
     <div className={classes.main}>
       <RandomButton map={map} setMap={setMap} />
@@ -20,12 +18,26 @@ export default function PystolovinaMap({ map, setMap, agentCoordinates }) {
             <div className={classes.row}>
               {row.map((tile, colIndex) => {
                 return (
-                  <img
-                    src={tileMap[tile]}
-                    alt={tile}
-                    key={rowIndex + colIndex}
-                    className={tile === 1 ? classes.scaffold : classes.void}
-                  />
+                  <div className={classes.contentHolder}>
+                    <img
+                      src={tileMap[tile]}
+                      alt={tile}
+                      key={rowIndex + colIndex}
+                      className={tile === 1 ? classes.scaffold : classes.void}
+                    />
+                    {Agents.map((agent) => {
+                      if (agent.row === rowIndex && agent.col === colIndex) {
+                        return (
+                          <img
+                            src={agent.img}
+                            alt={agent.name}
+                            key={agent.id}
+                            className={classes.agent}
+                          />
+                        );
+                      }
+                    })}
+                  </div>
                 );
               })}
             </div>
