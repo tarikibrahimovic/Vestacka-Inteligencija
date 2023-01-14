@@ -8,7 +8,7 @@ const tileMap = {
   1: Scaffold,
 };
 
-export default function PystolovinaMap({ map, setMap, Agents, setAgents }) {
+export default function PystolovinaMap({ map, setMap, Agents }) {
   return (
     <div className={classes.main}>
       <RandomButton map={map} setMap={setMap} />

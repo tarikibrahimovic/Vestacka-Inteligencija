@@ -80,7 +80,7 @@ function Pytanja() {
       }),
     };
 
-    fetch("http://127.0.0.1:8000", requestOptions)
+    fetch("http://127.0.0.1:8000/get-moves", requestOptions)
       .then((e) => {
         return e.json();
       })

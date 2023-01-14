@@ -30,8 +30,8 @@ export default function Settings({
           img: Student,
           row: null,
           col: null,
-          depth: null,
-          time: null,
+          depth: 2,
+          time: 20,
         },
       ]);
     } else {
@@ -60,8 +60,8 @@ export default function Settings({
           img: img,
           row: null,
           col: null,
-          depth: null,
-          time: null,
+          depth: 2,
+          time: 20,
         },
       ]);
     } else {
