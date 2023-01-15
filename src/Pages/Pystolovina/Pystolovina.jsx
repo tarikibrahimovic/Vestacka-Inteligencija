@@ -5,39 +5,32 @@ import Settings from "../../components/Settings/Settings";
 import PystolovinaMap from "../../components/PystolovinaMap/PystolovinaMap";
 import { NotificationManager } from "react-notifications";
 import Aki from "../../img/Aki.png";
+import DefaultAgent1 from "../../img/DefaultAgent1.png";
 import DefaultAgent from "../../img/DefaultAgent.png";
 import { useEffect } from "react";
 import { useCallback } from "react";
 
-function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
-
-  // While there remain elements to shuffle.
-  while (currentIndex != 0) {
-
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+const shiftLeft = (array, n) => {
+  // Make a copy of the original array
+  let copy = [...array];
+  // Shift the elements of the copy by n positions
+  for (let i = 0; i < array.length; i++) {
+    let j = (i + n) % array.length;
+    array[i] = copy[j];
   }
+};
 
-  return array;
-}
 export default function Pystolovina() {
   const [hiddenSidebar, setHiddenSidebar] = useState(true);
   const [Agents, setAgents] = useState([
     {
-      id: 10,
-      name: "Teacher1",
+      id: 2,
+      name: "User",
       row: null,
       col: null,
-      tip: "Aki",
-      img: Aki,
-      depth: 2,
-      time: 20,
+      img: DefaultAgent1,
+      depth: null,
+      time: null,
     },
     {
       id: 2,
@@ -50,11 +43,12 @@ export default function Pystolovina() {
     },
   ]);
   const [agentTurnId, setAgentTurnId] = useState();
+  const [lastAgentId, setLastAgentId] = useState(0);
   const [mapRows, setMapRows] = useState(null);
   const [mapCols, setMapCols] = useState(null);
-  const [isRunning, setIsRunning] = useState(false)
-  const [lastAgentId, setLastAgentId] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [isRunning, setIsRunning] = useState(false);
+  const [activeAgent, setActiveAgent] = useState(null);
+  const [lostAgents, setLostAgents] = useState([]);
   const [map, setMap] = useState([
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
@@ -62,7 +56,25 @@ export default function Pystolovina() {
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
   ]);
-  const agentOnTurn = Agents.find((agent) => agent.id === agentTurnId)
+  function shuffle(array) {
+    let currentIndex = array.length,
+      randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
+  }
 
   const placeAgents = () => {
     let availableCoordinates = [];
@@ -94,8 +106,8 @@ export default function Pystolovina() {
 
   const hasMoves = useCallback(
     (agentId) => {
-      const agent = Agents.find((agent) => agent.id === agentId)
-      const { row, col } = agent
+      const agent = Agents.find((agent) => agent.id === agentId);
+      const { row, col } = agent;
 
       // check all 8 directions
       if (
@@ -103,7 +115,7 @@ export default function Pystolovina() {
         map[row - 1][col] === 1 &&
         !Agents.find((agent) => agent.row === row - 1 && agent.col === col)
       )
-        return true
+        return true;
 
       if (
         row > 0 &&
@@ -111,14 +123,14 @@ export default function Pystolovina() {
         map[row - 1][col + 1] === 1 &&
         !Agents.find((agent) => agent.row === row - 1 && agent.col === col + 1)
       )
-        return true
+        return true;
 
       if (
         col < map[0].length - 1 &&
         map[row][col + 1] === 1 &&
         !Agents.find((agent) => agent.row === row && agent.col === col + 1)
       )
-        return true
+        return true;
 
       if (
         row < map.length - 1 &&
@@ -126,14 +138,14 @@ export default function Pystolovina() {
         map[row + 1][col + 1] === 1 &&
         !Agents.find((agent) => agent.row === row + 1 && agent.col === col + 1)
       )
-        return true
+        return true;
 
       if (
         row < map.length - 1 &&
         map[row + 1][col] === 1 &&
         !Agents.find((agent) => agent.row === row + 1 && agent.col === col)
       )
-        return true
+        return true;
 
       if (
         row < map.length - 1 &&
@@ -141,14 +153,14 @@ export default function Pystolovina() {
         map[row + 1][col - 1] === 1 &&
         !Agents.find((agent) => agent.row === row + 1 && agent.col === col - 1)
       )
-        return true
+        return true;
 
       if (
         col > 0 &&
         map[row][col - 1] === 1 &&
         !Agents.find((agent) => agent.row === row && agent.col === col - 1)
       )
-        return true
+        return true;
 
       if (
         row > 0 &&
@@ -156,104 +168,128 @@ export default function Pystolovina() {
         map[row - 1][col - 1] === 1 &&
         !Agents.find((agent) => agent.row === row - 1 && agent.col === col - 1)
       )
-        return true
+        return true;
 
-      return false
+      return false;
     },
     [Agents, map]
-  )
-
+  );
 
   const agentsOrder = () => {
-    if(Agents.some(agent => agent.row === null || agent.col === null)){
+    if (Agents.some((agent) => agent.row === null || agent.col === null)) {
       NotificationManager.error("Not all agents are on the map!", "", 3000);
-      return
-    }
-    else{
+      return;
+    } else {
       setAgents(shuffle(Agents));
-      setAgents(agents => {
+      setAgents((agents) => {
         return agents.map((item, i) => {
-          console.log(item);
           return {
             ...item,
-            id: i
-          }
-        })
-      })
-      setAgentTurnId(0)
-      setIsRunning(true)
+            id: i + 1,
+          };
+        });
+      });
+      setAgentTurnId(1);
+      setIsRunning(true);
+      setLostAgents([]);
     }
-  }
-
-  const updateGameStatus = useCallback(() => {
-    const agentsLength = Agents.length
-    setAgentTurnId((prevState) => {
-      setLastAgentId(prevState)
-      let nextAgentId = (prevState % agentsLength) + 1
-      let agentsWithoutMoves = 0
-      while (1) {
-        if (hasMoves(nextAgentId)) return nextAgentId
-        nextAgentId = (nextAgentId % agentsLength) + 1
-
-        agentsWithoutMoves++
-        if (agentsWithoutMoves === agentsLength) {
-          return 0
-        }
-      }
-    })
-  }, [Agents, hasMoves])
+  };
 
   useEffect(() => {
-    if(!isRunning){
-      return
+    if (!Agents.every((agent) => agent.hasOwnProperty("id")) || !isRunning)
+      return;
+
+    const shiftedAgents = [...Agents];
+    shiftLeft(shiftedAgents, lastAgentId);
+
+    console.log(shiftedAgents);
+    setLostAgents((prevIds) => {
+      const newIds = [...prevIds];
+      for (const agent of shiftedAgents) {
+        if (
+          !hasMoves(agent.id) &&
+          !newIds.includes(agent.id) &&
+          newIds.length < Agents.length - 1
+        ) {
+          newIds.push(agent.id);
+          if (newIds.length === Agents.length - 1) setIsRunning(false);
+        }
+      }
+      return newIds;
+    });
+  }, [Agents, hasMoves, isRunning, lastAgentId]);
+
+  const changeAgentTurn = () => {
+    const agentsLength = Agents.length;
+    setAgentTurnId((prevState) => {
+      setLastAgentId(prevState);
+      let nextAgentId = (prevState % agentsLength) + 1;
+      let agentsWithoutMoves = 0;
+      while (1) {
+        if (hasMoves(nextAgentId)) {
+          return nextAgentId;
+        }
+        nextAgentId = (nextAgentId % agentsLength) + 1;
+
+        agentsWithoutMoves++;
+        if (agentsWithoutMoves === agentsLength) {
+          return 0;
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (!isRunning || activeAgent?.name === "User") {
+      return;
     }
-    ;(async () => {
+    setIsRunning(true);
+    (async () => {
       const body = {
         map,
         Agents,
         agentTurnId,
-      }
+      };
 
       // AI move
-      const baseUrl = "http://127.0.0.1:8000"
+      const baseUrl = "http://127.0.0.1:8000";
       const response = await fetch(`${baseUrl}/get-path`, {
         method: "POST",
         body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-
-      const data = await response.json()
-      console.log(data);
-      const move = data[1]
+      const data = await response.json();
+      const move = data[1];
 
       setTimeout(() => {
         if (move) {
-          const aiAgentPos = [agentOnTurn.row, agentOnTurn.col]
+          const aiAgentPos = [activeAgent.row, activeAgent.col];
           setMap((prevMap) => {
-            let newMap = [...prevMap]
-            newMap[aiAgentPos[0]][aiAgentPos[1]] = 0
-            return newMap
-          })
+            let newMap = [...prevMap];
+            newMap[aiAgentPos[0]][aiAgentPos[1]] = 0;
+            return newMap;
+          });
           setAgents((prevAgents) => {
-            const newAgents = [...prevAgents]
-            const newAgentOnTurn = newAgents.find((a) => a.id === agentTurnId)
-            newAgentOnTurn.row = move[0]
-            newAgentOnTurn.col = move[1]
-            return newAgents
-          })
+            const newAgents = [...prevAgents];
+            const newAgentOnTurn = newAgents.find((a) => a.id === agentTurnId);
+            newAgentOnTurn.row = move[0];
+            newAgentOnTurn.col = move[1];
+            return newAgents;
+          });
         }
+        setIsRunning(false);
+      }, 300);
+    })();
+  }, [agentsOrder]);
 
-        updateGameStatus()
-        setLoading(false)
-      }, 300)
-  })()
-},[agentsOrder, updateGameStatus])
+  useEffect(() => {
+    setActiveAgent(Agents.find((agent) => agent.id === agentTurnId));
+  }, [agentTurnId]);
 
-  console.log(Agents)
-
+  // console.log(agentTurnId, activeAgent);
   return (
     <>
       <Settings
@@ -274,7 +310,18 @@ export default function Pystolovina() {
           className={classes.settings}
           onClick={() => setHiddenSidebar(!hiddenSidebar)}
         />
-        <PystolovinaMap map={map} setMap={setMap} Agents={Agents} setAgents={setAgents}/>
+        <PystolovinaMap
+          map={map}
+          setMap={setMap}
+          Agents={Agents}
+          setAgents={setAgents}
+          agentTurnId={agentTurnId}
+          hasMoves={hasMoves}
+          lostAgents={lostAgents}
+          setLostAgents={setLostAgents}
+          changeAgentTurn={changeAgentTurn}
+          isRunning={isRunning}
+        />
         <button onClick={placeAgents}>PLACE AGENTS</button>
         <button onClick={agentsOrder}>START</button>
       </div>
