@@ -1,7 +1,11 @@
 .random{
     border: 2px solid darkblue;
+    color: darkblue;
     border-radius: 10px;
     background-color: transparent;
+    transition: 0.3s ease-in-out;
+    padding: 10px 20px;
+    margin: 10px;
 }
 
 .random:hover{

@@ -4,7 +4,6 @@ import { AiFillSetting } from "react-icons/ai";
 import Settings from "../../components/Settings/Settings";
 import PystolovinaMap from "../../components/PystolovinaMap/PystolovinaMap";
 import { NotificationManager } from "react-notifications";
-import Aki from "../../img/Aki.png";
 import DefaultAgent1 from "../../img/DefaultAgent1.png";
 import DefaultAgent from "../../img/DefaultAgent.png";
 import { useEffect } from "react";
@@ -28,6 +27,7 @@ export default function Pystolovina() {
       name: "User",
       row: null,
       col: null,
+      tip: "User",
       img: DefaultAgent1,
       depth: null,
       time: null,
@@ -37,6 +37,7 @@ export default function Pystolovina() {
       name: "User",
       row: null,
       col: null,
+      tip: "User",
       img: DefaultAgent,
       depth: null,
       time: null,
@@ -49,6 +50,7 @@ export default function Pystolovina() {
   const [isRunning, setIsRunning] = useState(false);
   const [activeAgent, setActiveAgent] = useState(null);
   const [lostAgents, setLostAgents] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [map, setMap] = useState([
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
@@ -60,7 +62,6 @@ export default function Pystolovina() {
     let currentIndex = array.length,
       randomIndex;
 
-    // While there remain elements to shuffle.
     while (currentIndex != 0) {
       // Pick a remaining element.
       randomIndex = Math.floor(Math.random() * currentIndex);
@@ -77,6 +78,21 @@ export default function Pystolovina() {
   }
 
   const placeAgents = () => {
+    if (isRunning) {
+      NotificationManager.error("You can't do that", "Error");
+      return;
+    }
+    setLostAgents([]);
+    setAgents((prev) => {
+      const newAgents = [...prev];
+      newAgents.forEach((agent) => {
+        agent.row = null;
+        agent.col = null;
+      });
+      return newAgents;
+    });
+    setAgentTurnId(1);
+    setLoading(false);
     let availableCoordinates = [];
     map.map((row, rowIndex) => {
       row.map((column, columnIndex) => {
@@ -196,13 +212,11 @@ export default function Pystolovina() {
   };
 
   useEffect(() => {
-    if (!Agents.every((agent) => agent.hasOwnProperty("id")) || !isRunning)
+    if (!Agents?.every((agent) => agent.hasOwnProperty("id")) || !isRunning)
       return;
 
     const shiftedAgents = [...Agents];
     shiftLeft(shiftedAgents, lastAgentId);
-
-    console.log(shiftedAgents);
     setLostAgents((prevIds) => {
       const newIds = [...prevIds];
       for (const agent of shiftedAgents) {
@@ -212,7 +226,10 @@ export default function Pystolovina() {
           newIds.length < Agents.length - 1
         ) {
           newIds.push(agent.id);
-          if (newIds.length === Agents.length - 1) setIsRunning(false);
+          if (newIds.length === Agents.length - 1) {
+            setIsRunning(false);
+            NotificationManager.success("Game over!", "", 3000);
+          }
         }
       }
       return newIds;
@@ -236,14 +253,21 @@ export default function Pystolovina() {
           return 0;
         }
       }
+      setActiveAgent(Agents.find((agent) => agent.id === nextAgentId));
     });
   };
 
   useEffect(() => {
-    if (!isRunning || activeAgent?.name === "User") {
+    const agentOnTurn = Agents.find((agent) => agent.id === agentTurnId);
+    if (
+      !isRunning ||
+      agentOnTurn?.name === "User" ||
+      loading ||
+      lostAgents.length === Agents.length - 1
+    ) {
       return;
     }
-    setIsRunning(true);
+    setLoading(true);
     (async () => {
       const body = {
         map,
@@ -251,8 +275,8 @@ export default function Pystolovina() {
         agentTurnId,
       };
 
-      // AI move
-      const baseUrl = "http://127.0.0.1:8000";
+      // const baseUrl = "http://127.0.0.1:8000";
+      const baseUrl = "https://tarik2508.pythonanywhere.com"
       const response = await fetch(`${baseUrl}/get-path`, {
         method: "POST",
         body: JSON.stringify(body),
@@ -266,7 +290,8 @@ export default function Pystolovina() {
 
       setTimeout(() => {
         if (move) {
-          const aiAgentPos = [activeAgent.row, activeAgent.col];
+          let actAgent = Agents.find((agent) => agent.id === agentTurnId);
+          const aiAgentPos = [actAgent.row, actAgent.col];
           setMap((prevMap) => {
             let newMap = [...prevMap];
             newMap[aiAgentPos[0]][aiAgentPos[1]] = 0;
@@ -280,18 +305,27 @@ export default function Pystolovina() {
             return newAgents;
           });
         }
-        setIsRunning(false);
+        setLoading(false);
       }, 300);
+      changeAgentTurn();
     })();
-  }, [agentsOrder]);
+  }, [
+    agentsOrder,
+    map,
+    activeAgent,
+    agentTurnId,
+    isRunning,
+    loading,
+    lostAgents,
+    changeAgentTurn,
+  ]);
 
   useEffect(() => {
     setActiveAgent(Agents.find((agent) => agent.id === agentTurnId));
-  }, [agentTurnId]);
+  }, [agentTurnId, isRunning, activeAgent, map, loading, lostAgents]);
 
-  // console.log(agentTurnId, activeAgent);
   return (
-    <>
+    <div className={classes.container}>
       <Settings
         hiddenSidebar={hiddenSidebar}
         setHiddenSidebar={setHiddenSidebar}
@@ -304,12 +338,24 @@ export default function Pystolovina() {
         Agents={Agents}
         setAgents={setAgents}
       />
-      <div className={`${classes.main} ${!hiddenSidebar && classes.dark}`}>
-        <h1>PYSTOLOVnaN</h1>
-        <AiFillSetting
-          className={classes.settings}
-          onClick={() => setHiddenSidebar(!hiddenSidebar)}
-        />
+      <div className={`${classes.main}`}>
+        <button
+          className={classes.options}
+          onClick={() => {
+            if (isRunning) {
+              NotificationManager.error(
+                "You can't change settings while game is running!",
+                "",
+                3000
+              );
+              return;
+            }
+            setHiddenSidebar(!hiddenSidebar);
+          }}
+        >
+          Options
+          <AiFillSetting className={classes.settings} />
+        </button>
         <PystolovinaMap
           map={map}
           setMap={setMap}
@@ -321,10 +367,10 @@ export default function Pystolovina() {
           setLostAgents={setLostAgents}
           changeAgentTurn={changeAgentTurn}
           isRunning={isRunning}
+          placeAgents={placeAgents}
+          agentsOrder={agentsOrder}
         />
-        <button onClick={placeAgents}>PLACE AGENTS</button>
-        <button onClick={agentsOrder}>START</button>
       </div>
-    </>
+    </div>
   );
 }

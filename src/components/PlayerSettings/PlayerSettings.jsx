@@ -16,7 +16,7 @@ export default function PlayerSettings({
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
-            !Agents.some((agent) => agent.name === name) && classes.selected
+            !Agents?.some((agent) => agent.name === name) && classes.selected
           }`}
           onClick={(e) => {
             setAgents((agent) => {
@@ -28,7 +28,7 @@ export default function PlayerSettings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(
+            Agents?.some(
               (agent) => agent.name === name && agent.tip === "Aki"
             ) && classes.selected
           }`}
@@ -39,7 +39,7 @@ export default function PlayerSettings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(
+            Agents?.some(
               (agent) => agent.name === name && agent.tip === "Bole"
             ) && classes.selected
           }`}
@@ -50,7 +50,7 @@ export default function PlayerSettings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(
+            Agents?.some(
               (agent) => agent.name === name && agent.tip === "Draza"
             ) && classes.selected
           }`}
@@ -61,7 +61,7 @@ export default function PlayerSettings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(
+            Agents?.some(
               (agent) => agent.name === name && agent.tip === "Jocke"
             ) && classes.selected
           }`}
@@ -71,7 +71,7 @@ export default function PlayerSettings({
           <img src={Jocke} alt="Jocke" className={classes.agent} />
         </button>
       </div>
-      {Agents.some(
+      {Agents?.some(
         (agent) =>
           agent.name === name &&
           (agent.tip === "Draza" || agent.tip === "Bole")
@@ -84,6 +84,7 @@ export default function PlayerSettings({
               <input
                 id="depth"
                 type="number"
+                className={classes.nums}
                 onChange={(e) => {
                   setAgents((agent) => {
                     return agent?.map((agent) => {
@@ -101,6 +102,7 @@ export default function PlayerSettings({
               <input
                 id="Time"
                 type="number"
+                className={classes.nums}
                 onChange={(e) => {
                   setAgents((agent) => {
                     return agent?.map((agent) => {

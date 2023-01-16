@@ -6,6 +6,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import DefaultAgent1 from "../../img/DefaultAgent1.png";
 import Student from "../../img/STUDENT.png";
 import { useEffect } from "react";
+import { NotificationManager } from "react-notifications";
 
 export default function Settings({
   hiddenSidebar,
@@ -18,9 +19,16 @@ export default function Settings({
   setMap,
   Agents,
   setAgents,
+  isRunning,
 }) {
   const studentAgentHandler = (tip) => {
-    if (!Agents.some((agent) => agent.name === "Student")) {
+    if (!Agents?.some((agent) => agent.name === "Student")) {
+      if (Agents.length > 1 && tip !== "Max^N") {
+        NotificationManager.error(
+          "You cannot have more than 2 agents if you don't use Max^N agent"
+        );
+        return;
+      }
       setAgents([
         ...Agents,
         {
@@ -35,6 +43,12 @@ export default function Settings({
         },
       ]);
     } else {
+      if (Agents.length > 2 && tip !== "Max^N") {
+        NotificationManager.error(
+          "You cannot have more than 2 agents if you don't use Max^N agent"
+        );
+        return;
+      }
       setAgents((agent) => {
         return agent.map((a) => {
           if (a.name === "Student") {
@@ -50,7 +64,13 @@ export default function Settings({
   };
 
   const teacherAgentHandler = (teacher, tip, img) => {
-    if (!Agents.some((agent) => agent.name === teacher)) {
+    if (!Agents?.some((agent) => agent.name === teacher)) {
+      if (Agents.length > 1 && (tip === "Draza" || tip === "Bole")) {
+        NotificationManager.error(
+          "You cannot have more than 2 agents if you want to use Draza or Bole agent"
+        );
+        return;
+      }
       setAgents([
         ...Agents,
         {
@@ -65,6 +85,12 @@ export default function Settings({
         },
       ]);
     } else {
+      if (Agents.length > 2 && (tip === "Draza" || tip === "Bole")) {
+        NotificationManager.error(
+          "You cannot have more than 2 agents if you want to use Draza or Bole agent"
+        );
+        return;
+      }
       setAgents((agent) => {
         return agent.map((a) => {
           if (a.name === teacher) {
@@ -93,6 +119,7 @@ export default function Settings({
     }
   }, [mapRows, mapCols]);
 
+  // console.log(Agents);
   return (
     <div className={hiddenSidebar ? classes.hiddenSidebar : classes.sidebar}>
       <p
@@ -138,7 +165,7 @@ export default function Settings({
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
-            !Agents.some(agent => agent.name === "User") && classes.selected
+            !Agents?.some((agent) => agent.name === "User") && classes.selected
           }`}
           onClick={(e) => {
             let newAgents = Agents?.filter((agent) => agent.name !== "User");
@@ -149,10 +176,24 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.filter(agent => {return agent.name === "User"}).length === 1 && classes.selected
+            Agents?.filter((agent) => {
+              return agent.name === "User";
+            }).length === 1 && classes.selected
           }`}
           onClick={(e) => {
-            if (!Agents.some((agent) => agent.name === "User")) {
+            if (!Agents?.some((agent) => agent.name === "User")) {
+              if (
+                Agents.length > 1 &&
+                Agents.some(
+                  (agent) => agent.name === "Student" && agent.tip !== "Max^N"
+                )
+              ) {
+                NotificationManager.error(
+                  "You cannot have more than 2 agents",
+                  "",
+                  3000
+                );
+              }
               setAgents([
                 ...Agents,
                 {
@@ -160,6 +201,7 @@ export default function Settings({
                   name: "User",
                   img: DefaultAgent,
                   row: null,
+                  tip: "User",
                   col: null,
                   depth: null,
                   time: null,
@@ -167,15 +209,18 @@ export default function Settings({
               ]);
             } else {
               setAgents((agent) => {
-                return agent.map((a) => {
-                  if (a.name === "User") {
-                    return {
-                      ...a,
-                      img: DefaultAgent,
-                    };
-                  }
-                  return a;
+                let newAgents = agent.filter((a) => a.name !== "User");
+                newAgents.push({
+                  id: 0,
+                  name: "User",
+                  img: DefaultAgent,
+                  row: null,
+                  col: null,
+                  tip: "User",
+                  depth: null,
+                  time: null,
                 });
+                return newAgents;
               });
             }
           }}
@@ -188,10 +233,25 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.filter(agent => {return agent.name === "User"}).length === 2 && classes.selected
+            Agents?.filter((agent) => {
+              return agent.name === "User";
+            }).length === 2 && classes.selected
           }`}
           onClick={(e) => {
-            if (!Agents.some((agent) => agent.name === "User")) {
+            if (!Agents?.some((agent) => agent.name === "User")) {
+              if (
+                Agents?.length >= 1 &&
+                Agents?.some(
+                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || (agent.tip === "Bole" || agent.tip === "Draza")
+                )
+              ) {
+                NotificationManager.error(
+                  "You cannot have more than 2 agents",
+                  "",
+                  3000
+                );
+                return;
+              }
               setAgents([
                 ...Agents,
                 {
@@ -199,6 +259,7 @@ export default function Settings({
                   name: "User",
                   img: DefaultAgent,
                   row: null,
+                  tip: "User",
                   col: null,
                   depth: null,
                   time: null,
@@ -208,12 +269,26 @@ export default function Settings({
                   name: "User",
                   img: DefaultAgent1,
                   row: null,
+                  tip: "User",
                   col: null,
                   depth: null,
                   time: null,
                 },
               ]);
             } else {
+              if (
+                Agents.length >= 2 &&
+                Agents?.some(
+                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || (agent.tip === "Bole" || agent.tip === "Draza")
+                )
+              ) {
+                NotificationManager.error(
+                  "You cannot have more than 2 agents",
+                  "",
+                  3000
+                );
+                return;
+              }
               setAgents([
                 ...Agents,
                 {
@@ -222,6 +297,7 @@ export default function Settings({
                   img: DefaultAgent1,
                   row: null,
                   col: null,
+                  tip: "User",
                   depth: null,
                   time: null,
                 },
@@ -249,17 +325,20 @@ export default function Settings({
       <div className={classes.hiddenSidebarContent}>
         <button
           className={`${classes.agentButton} ${
-            !Agents.some(agent => agent.name === "Student") && classes.selected
+            !Agents?.some((agent) => agent.name === "Student") &&
+            classes.selected
           }`}
           onClick={(e) => {
-            setAgents(Agents.filter((agent) => agent.name !== "Student"));
+            setAgents(Agents?.filter((agent) => agent.name !== "Student"));
           }}
         >
           <MdDoNotDisturbAlt className={classes.disturb} />
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(agent => agent.name === "Student" && agent.tip === "Minimax") && classes.selected
+            Agents?.some(
+              (agent) => agent.name === "Student" && agent.tip === "Minimax"
+            ) && classes.selected
           }`}
           onClick={(e) => {
             studentAgentHandler("Minimax");
@@ -269,7 +348,9 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(agent => agent.name === "Student" && agent.tip === "AlphaBeta") && classes.selected
+            Agents?.some(
+              (agent) => agent.name === "Student" && agent.tip === "AlphaBeta"
+            ) && classes.selected
           }`}
           onClick={(e) => studentAgentHandler("AlphaBeta")}
         >
@@ -277,7 +358,9 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(agent => agent.name === "Student" && agent.tip === "Expectimax") && classes.selected
+            Agents?.some(
+              (agent) => agent.name === "Student" && agent.tip === "Expectimax"
+            ) && classes.selected
           }`}
           onClick={(e) => studentAgentHandler("Expectimax")}
         >
@@ -285,7 +368,9 @@ export default function Settings({
         </button>
         <button
           className={`${classes.agentButton} ${
-            Agents.some(agent => agent.name === "Student" && agent.tip === "Max^N") && classes.selected
+            Agents?.some(
+              (agent) => agent.name === "Student" && agent.tip === "Max^N"
+            ) && classes.selected
           }`}
           onClick={(e) => studentAgentHandler("Max^N")}
         >
@@ -332,7 +417,7 @@ export default function Settings({
                     if (a.name === "Student") {
                       return {
                         ...a,
-                        depth: e.target.value,
+                        depth: parseInt(e.target.value),
                       };
                     }
                     return a;
@@ -368,7 +453,7 @@ export default function Settings({
                     if (a.name === "Student") {
                       return {
                         ...a,
-                        time: e.target.value,
+                        time: parseInt(e.target.value),
                       };
                     }
                     return a;

@@ -10,7 +10,6 @@
     border: 2px solid black;
     border-radius: 8px;
     padding: 5px;
-    background-color: #fff;
     cursor: pointer;
 }
 
@@ -26,7 +25,7 @@
 }
 
 .selected{
-    background-color: rgb(165, 165, 165);
+    background-color: rgb(122, 122, 122);
 }
 
 .disturb{

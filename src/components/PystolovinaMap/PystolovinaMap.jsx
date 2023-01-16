@@ -3,6 +3,7 @@ import Scaffold from "../../img/scaffold.png";
 import classes from "./PystolovinaMap.module.css";
 import RandomButton from "../RadnomButon/RandomButton";
 import { NotificationManager } from "react-notifications";
+import End from "../../img/x.png";
 
 const tileMap = {
   0: Void,
@@ -20,18 +21,20 @@ export default function PystolovinaMap({
   setLostAgents,
   changeAgentTurn,
   isRunning,
+  placeAgents,
+  agentsOrder,
 }) {
   const availableMove = (agentId, row, col) => {
-    const agent = Agents.find((agent) => agent.id === agentId);
+    const agent = Agents?.find((agent) => agent.id === agentId);
     if (map[row][col] === 0) return false;
     if (Math.abs(agent.row - row) > 1 || Math.abs(agent.col - col) > 1)
       return false;
     return true;
   };
-  
+
   const moveHandler = (row, col) => {
     if (!isRunning) return;
-    const activeAgent = Agents.find((agent) => agent.id === agentTurnId);
+    const activeAgent = Agents?.find((agent) => agent.id === agentTurnId);
     if (activeAgent.name === "User") {
       if (hasMoves(activeAgent.id)) {
         if (availableMove(activeAgent.id, row, col)) {
@@ -63,10 +66,32 @@ export default function PystolovinaMap({
     }
   };
 
-  // console.log(lostAgents);
   return (
     <div className={classes.main}>
-      <RandomButton map={map} setMap={setMap} />
+      <div className={classes.buttonContainer}>
+        <RandomButton
+          map={map}
+          setMap={setMap}
+          setLostAgents={setLostAgents}
+          setAgents={setAgents}
+          isRunning={isRunning}
+        />
+        <button onClick={placeAgents} className={classes.place}>
+          Place Agents
+        </button>
+        <button
+          onClick={(e) => {
+            if (Agents?.length > 2) {
+              NotificationManager.error("Pick more agents");
+              return;
+            }
+            agentsOrder();
+          }}
+          className={classes.order}
+        >
+          Start
+        </button>
+      </div>
       <div className={classes.map}>
         {map.map((row, rowIndex) => {
           return (
@@ -81,7 +106,7 @@ export default function PystolovinaMap({
                       onClick={() => moveHandler(rowIndex, colIndex)}
                       className={tile === 1 ? classes.scaffold : classes.void}
                     />
-                    {Agents.map((agent) => {
+                    {Agents?.map((agent) => {
                       if (agent.row === rowIndex && agent.col === colIndex) {
                         return (
                           <img
@@ -93,6 +118,21 @@ export default function PystolovinaMap({
                                 ? classes.activeAgent
                                 : ""
                             }`}
+                          />
+                        );
+                      }
+                    })}
+                    {lostAgents?.map((agentId) => {
+                      const agent = Agents?.find(
+                        (agent) => agent.id === agentId
+                      );
+                      if (agent?.row === rowIndex && agent?.col === colIndex) {
+                        return (
+                          <img
+                            src={End}
+                            alt={agent.name}
+                            key={agent.id}
+                            className={classes.end}
                           />
                         );
                       }
