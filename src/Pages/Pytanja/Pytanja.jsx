@@ -79,7 +79,9 @@ function Pytanja() {
         player: { tip: agentKey, x: playerX, y: playerY },
       }),
     };
-    fetch("https://tarik2508.pythonanywhere.com/get-moves", requestOptions)
+    // const baseUrl = "http://127.0.0.1:8000";
+    const baseUrl = "https://tarik2508.pythonanywhere.com"
+    fetch(`${baseUrl}/get-moves`, requestOptions)
       .then((e) => {
         return e.json();
       })

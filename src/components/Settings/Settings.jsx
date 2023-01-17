@@ -65,9 +65,9 @@ export default function Settings({
 
   const teacherAgentHandler = (teacher, tip, img) => {
     if (!Agents?.some((agent) => agent.name === teacher)) {
-      if (Agents.length > 1 && (tip === "Draza" || tip === "Bole")) {
+      if (Agents.length > 1 && (tip === "Draza") || Agents?.some((agent) => agent.tip === "Draza")) {
         NotificationManager.error(
-          "You cannot have more than 2 agents if you want to use Draza or Bole agent"
+          "You cannot have more than 2 agents if you want to use Draza"
         );
         return;
       }
@@ -85,9 +85,9 @@ export default function Settings({
         },
       ]);
     } else {
-      if (Agents.length > 2 && (tip === "Draza" || tip === "Bole")) {
+      if (Agents.length > 2 && (tip === "Draza")) {
         NotificationManager.error(
-          "You cannot have more than 2 agents if you want to use Draza or Bole agent"
+          "You cannot have more than 2 agents if you want to use Draza"
         );
         return;
       }
@@ -242,7 +242,7 @@ export default function Settings({
               if (
                 Agents?.length >= 1 &&
                 Agents?.some(
-                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || (agent.tip === "Bole" || agent.tip === "Draza")
+                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || ( agent.tip === "Draza")
                 )
               ) {
                 NotificationManager.error(
@@ -279,7 +279,7 @@ export default function Settings({
               if (
                 Agents.length >= 2 &&
                 Agents?.some(
-                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || (agent.tip === "Bole" || agent.tip === "Draza")
+                  (agent) => (agent.name === "Student" && agent.tip !== "Max^N") || ( agent.tip === "Draza")
                 )
               ) {
                 NotificationManager.error(

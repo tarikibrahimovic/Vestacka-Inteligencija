@@ -81,7 +81,8 @@ export default function PystolovinaMap({
         </button>
         <button
           onClick={(e) => {
-            if (Agents?.length > 2) {
+            if (Agents?.length < 2) {
+              console.log(Agents);
               NotificationManager.error("Pick more agents");
               return;
             }
