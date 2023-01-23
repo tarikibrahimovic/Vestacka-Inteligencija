@@ -64,13 +64,14 @@ export default function Settings({
   };
 
   const teacherAgentHandler = (teacher, tip, img) => {
+    console.log(Agents)
     if (!Agents?.some((agent) => agent.name === teacher)) {
       if (
         (Agents.length > 1 && tip === "Draza") ||
         Agents?.some((agent) => agent.tip === "Draza") ||
         Agents?.some(
           (agent) => agent.tip !== "Max^N" && agent.name === "Student"
-        )
+        ) && Agents?.length > 1
       ) {
         NotificationManager.error(
           "You cannot have more than 2 agents if you want to use Draza"

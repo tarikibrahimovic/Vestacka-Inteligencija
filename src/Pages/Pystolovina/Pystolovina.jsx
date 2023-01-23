@@ -275,8 +275,8 @@ export default function Pystolovina() {
         agentTurnId,
       };
 
-      // const baseUrl = "http://127.0.0.1:8000";
-      const baseUrl = "https://tarik2508.pythonanywhere.com"
+      const baseUrl = "http://127.0.0.1:8000";
+      // const baseUrl = "https://tarik2508.pythonanywhere.com"
       const response = await fetch(`${baseUrl}/get-path`, {
         method: "POST",
         body: JSON.stringify(body),

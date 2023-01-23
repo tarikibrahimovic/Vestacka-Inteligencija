@@ -89,7 +89,7 @@ export default function PlayerSettings({
                   setAgents((agent) => {
                     return agent?.map((agent) => {
                       if (agent.name === name) {
-                        return { ...agent, depth: e.target.value };
+                        return { ...agent, depth: parseInt(e.target.value) };
                       }
                       return agent;
                     });
@@ -107,7 +107,7 @@ export default function PlayerSettings({
                   setAgents((agent) => {
                     return agent?.map((agent) => {
                       if (agent.name === name) {
-                        return { ...agent, time: e.target.value };
+                        return { ...agent, time: parseInt(e.target.value) };
                       }
                       return agent;
                     });
